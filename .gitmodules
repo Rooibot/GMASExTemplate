@@ -1,0 +1,7 @@
+[submodule "Plugins/GMCAbilitySystem"]
+	path = Plugins/GMCAbilitySystem
+	url = https://github.com/reznok/GMCAbilitySystem.git
+	branch = dev
+[submodule "Plugins/GMCExtended"]
+	path = Plugins/GMCExtended
+	url = https://github.com/Rooibot/GMCExtended.git
