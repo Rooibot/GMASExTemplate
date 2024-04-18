@@ -6,9 +6,13 @@ There will be a real README here at some point.
 
 To use this as a template, find your Unreal Engine install directory for the appropriate version (5.3). It might be something like `C:\Program Files\Epic Games\UE_5.3` or whatever.
 
-In the `UE_5.3` directory, go into the `Templates` directory and either clone this git repository or download a zipped archive and unpack it there. The next time you run Unreal Engine 5.3 without a project, you should see a "GMAS Extended" template available.
+In the `UE_5.3` directory, go into the `Templates` directory and clone this git repository recursively. The command you will want to use is:
 
-Pick this to generate a new C++ project with everything named appropriately.
+```
+git clone --recursive https://github.com/Rooibot/GMASExTemplate.git
+```
+
+The next time you run Unreal Engine 5.3 without a project, you should see a "GMAS Extended" template available; pick this to generate a new C++ project with everything named appropriately.
 
 ## Utilizing as a Project
 
