@@ -1,0 +1,28 @@
+# Build artifacts
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+
+# IDE artifacts
+.idea/
+.vs/
+.vsconfig
+*.pro
+*.pri
+*.kdev4
+*.sln
+*.DotSettings
+*.DotSettings.user
+
+# Version Control debris
+p4config.txt
+hidden_changes.conf
+ignore.conf
+debug.log
+
+# Unix backups
+*~
+
+# MacOS debris
+.DS_Store
