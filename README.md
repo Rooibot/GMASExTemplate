@@ -18,18 +18,29 @@ This template does not attempt to exercise every bit of functionality in all thr
 
 ## Installation
 
-To install and use this template, you'll want to make sure you have a git client. Find where your copy of Unreal 5.3 is installed -- on Windows, by default this is `C:\Program Files\Epic Games\UE_5.3` though obviously your copy may be installed somewhere else.
+### Prerequisites
+
+In order to install the latest version of this template, you will want to have a Git client available. While there will be bundled release .zip files eventually, currently you must pull from the repository. If you don't currently have a client installed, you'll want to pull it down from https://git-scm.com/downloads and install it.
+
+You will also need the most recent version of the General Movement Component installed to your Unreal Engine installation, *or* you will want to be prepared to add it to the project manually after you set it up; if you don't have it installed to the engine, then the first attempt to open the project after creating it will fail, as noted below.+
+
+### Installation Process
+
+Find where your copy of Unreal 5.3 is installed -- on Windows, by default this is `C:\Program Files\Epic Games\UE_5.3` though obviously your copy may be installed somewhere else.
 
 Once you've located your Unreal 5.3 install directory:
 
 1. Make sure that you've installed GMCv2 into 5.3 from the Epic launcher.
-	* **NOTE:** You _can_ install the plugin directly into the final project, just be aware that if you don't have GMCv2 in your 5.3 engine install, the project _will_ fail to open the first time.
-2. In a shell program, go into the `Templates` directory under your Unreal 5.3 installation.
-3. Type `git clone --recursive https://github.com/Rooibot/GMASExTemplate.git`
+  * **NOTE:** You _can_ install the plugin directly into the final project, just be aware that if you don't have GMCv2 in your 5.3 engine install, the project _will_ fail to open the first time.
+2. Open a command prompt, such as the Windows `cmd.exe`.
+3. Go to the Unreal Engine 5.3 installation directory you've located; if using `cmd.exe` you would do `cd <directory>`, for instance `cd "C:\Program Files\Epic Games\UE_5.3"` -- notice that if there are spaces in the path anywhere, you will want to put the path in quotes.
+4. Type `git clone --recursive https://github.com/Rooibot/GMASExTemplate.git` and wait for the command to finish. This will pull not only the GMASEx template but also appropriate versions of GMAS and GMCEx.
 
 This will pull the base template _and_ the appropriate copies of GMAS and GMCEx all in one go.
 
-Once this has happened, you can launch Unreal 5.3 from the launcher and you'll see under "Games" a new template is available:
+### Usage
+
+Once you've installed the template as described above, you can launch Unreal 5.3 from the launcher and you'll see that under "Games" a new template is available:
 
 ![An example of the GMAS Extended template in the Unreal launch window.](Media/Example-TemplatePanel.png)
 
