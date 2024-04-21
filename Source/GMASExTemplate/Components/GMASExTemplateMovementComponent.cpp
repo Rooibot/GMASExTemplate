@@ -45,3 +45,23 @@ void UGMASExTemplateMovementComponent::PreLocalMoveExecution_Implementation(cons
 
 	if (AbilitySystemComponent) AbilitySystemComponent->PreLocalMoveExecution();
 }
+
+void UGMASExTemplateMovementComponent::OnSolverChangedMode(FGameplayTag NewMode, FGameplayTag OldMode)
+{
+	Super::OnSolverChangedMode(NewMode, OldMode);
+
+	if (AbilitySystemComponent)
+	{
+		// Put our active solver into GMAS as an active tag, to make it easier to key abilities off of.
+		if (OldMode != FGameplayTag::EmptyTag)
+		{
+			AbilitySystemComponent->RemoveActiveTag(OldMode);
+		}
+
+		if (NewMode != FGameplayTag::EmptyTag)
+		{
+			AbilitySystemComponent->AddActiveTag(NewMode);
+		}
+	}
+
+}

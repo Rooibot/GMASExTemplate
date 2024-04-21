@@ -24,6 +24,9 @@ public:
 	virtual void GenSimulationTick_Implementation(float DeltaTime) override;
 	virtual void PreLocalMoveExecution_Implementation(const FGMC_Move& LocalMove) override;
 
+	// GMCEx overrides
+	virtual void OnSolverChangedMode(FGameplayTag NewMode, FGameplayTag OldMode) override;
+
 protected:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category="Components")
