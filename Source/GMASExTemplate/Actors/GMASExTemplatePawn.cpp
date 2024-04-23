@@ -1,7 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "GMASExTemplatePawn.h"
+﻿#include "GMASExTemplatePawn.h"
 
 #include "EnhancedInputComponent.h"
 #include "GMASExTemplate/Components/GMASExTemplateMovementComponent.h"

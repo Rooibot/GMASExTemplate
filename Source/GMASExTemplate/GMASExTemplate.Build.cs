@@ -1,7 +1,9 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
+using System.IO;
 using UnrealBuildTool;
 
+// ReSharper disable once InconsistentNaming
 public class GMASExTemplate : ModuleRules
 {
 	public GMASExTemplate(ReadOnlyTargetRules Target) : base(Target)
@@ -12,12 +14,13 @@ public class GMASExTemplate : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "GMCCore", "GMCAbilitySystem", "GMCExtended", "GMCExtendedAnimation" });
 
-		// Uncomment if you are using Slate UI
-		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
-		
-		// Uncomment if you are using online features
-		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
+		PrivateIncludePaths.AddRange(new string[]
+		{
+			ModuleDirectory,
+			Path.Combine(ModuleDirectory, "Actors"), 
+			Path.Combine(ModuleDirectory, "Animation"), 
+			Path.Combine(ModuleDirectory, "Components")
+		});
 
-		// To include OnlineSubsystemSteam, add it to the plugins section in your uproject file with the Enabled attribute set to true
 	}
 }

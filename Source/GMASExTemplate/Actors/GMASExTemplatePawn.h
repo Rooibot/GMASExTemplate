@@ -1,6 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "GMCE_MotionWarpingComponent.h"
@@ -8,6 +6,8 @@
 #include "Actors/GMAS_Pawn.h"
 #include "UObject/Object.h"
 #include "GMASExTemplatePawn.generated.h"
+
+class UGMASExTemplateMovementComponent;
 
 /**
  * 
@@ -18,7 +18,7 @@ class GMASEXTEMPLATE_API AGMASExTemplatePawn : public AGMAS_Pawn, public IGMCE_M
 	GENERATED_BODY()
 
 public:
-	AGMASExTemplatePawn(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	explicit AGMASExTemplatePawn(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	// GMCExtendedAnimation motion warping interface
 	virtual USkeletalMeshComponent* MotionWarping_GetMeshComponent() const override;
@@ -31,7 +31,7 @@ public:
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Components")
-	UGMCE_OrganicMovementCmp* MovementComponent;
+	UGMASExTemplateMovementComponent* MovementComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Components")
 	UGMCE_MotionWarpingComponent* MotionWarpingComponent;
