@@ -4,6 +4,8 @@ This project is meant to provide a very basic starting point for a game built at
 
 It is worth noting this is not meant to be a full foundation for a game—certainly not something along the scope of the `LyraSampleGame` project, or the venerable `ShooterGame` from the UE4 era. Think of this template as akin to the `ThirdPerson` or `FirstPerson` templates you can create a new Unreal project from: it doesn't do much, but it should hopefully be enough to get you started.
 
+It is *also* worth noting that this project is still *very much* under construction. It will get you up and running with GMAS and GMCEx in one go, but it does not do a lot else yet. When time permits, more will be added.
+
 ## Basic Features
 
 This template tries to exercise a few basic features across all parts of the ecosystem, as well as having some convenience classes already made:
@@ -26,14 +28,14 @@ You will also need the most recent version of the General Movement Component ins
 
 ### Installation Process
 
-Find where your copy of Unreal 5.3 is installed -- on Windows, by default this is `C:\Program Files\Epic Games\UE_5.3` though obviously your copy may be installed somewhere else.
+Find where your copy of Unreal 5.4 is installed -- on Windows, by default this is `C:\Program Files\Epic Games\UE_5.3` though obviously your copy may be installed somewhere else.
 
-Once you've located your Unreal 5.3 install directory:
+Once you've located your Unreal 5.4 install directory:
 
-1. Make sure that you've installed GMCv2 into 5.3 from the Epic launcher.
-  * **NOTE:** You _can_ install the plugin directly into the final project, just be aware that if you don't have GMCv2 in your 5.3 engine install, the project _will_ fail to open the first time.
+1. Make sure that you've installed GMCv2 into 5.4 from the Epic launcher.
+  * **NOTE:** You _can_ install the plugin directly into the final project, just be aware that if you don't have GMCv2 in your 5.4 engine install, the project _will_ fail to open the first time.
 2. Open a command prompt, such as the Windows `cmd.exe`.
-3. Go to the Unreal Engine 5.3 installation directory you've located; if using `cmd.exe` you would do `cd <directory>`, for instance `cd "C:\Program Files\Epic Games\UE_5.3"` -- notice that if there are spaces in the path anywhere, you will want to put the path in quotes.
+3. Go to the Unreal Engine 5.4 installation directory you've located; if using `cmd.exe` you would do `cd <directory>`, for instance `cd "C:\Program Files\Epic Games\UE_5.4"` -- notice that if there are spaces in the path anywhere, you will want to put the path in quotes.
 4. Type `git clone --recursive https://github.com/Rooibot/GMASExTemplate.git` and wait for the command to finish. This will pull not only the GMASEx template but also appropriate versions of GMAS and GMCEx.
 
 This will pull the base template _and_ the appropriate copies of GMAS and GMCEx all in one go.
@@ -52,7 +54,7 @@ Once you have the project open, you'll find that in addition to the usual Unreal
 
 * **Abilities**: This folder contains example blueprint implementations of three GMAS abilities (Jump, Roll, and Sprint).
 * **Animations**: While most of the animation sequences (and the meshes and control rigs) are pulled from the default Unreal character package, the montage used for the "Roll" command and the animation blueprint for our default pawn can be found here.
-* **Blueprints**: The `BP_DefaultPawn` used by this project can be found here, along with the `BP_Movement` component.
+* **Blueprints**: The `BP_ExamplePawn` used by this project can be found here, along with the `BP_ExampleMovement` component.
 * **Data**: This contains the data assets used by the project. The two `DA_` assets are GMAS-defined formats, while the `DT_` is an Unreal data table defining what gameplay tags are available.
 * **Effects**: This directory contains blueprint implementations of all the GMAS gameplay effects used by this demo (and some which are not).
 * **Input**: This template is built atop Unreal's newer "Enhanced Input" system; all the Input Actions (and the default Input Mapping Context) can be found in this directory.
@@ -64,8 +66,30 @@ Once you have the project open, you'll find that in addition to the usual Unreal
 
 ### Where is input being handled?
 
-For the main movement and camera controls, GMCv2 can handle the basics internally. If you look at the `BP_Movement` blueprint component, you'll see that `IA_Look` and `IA_Movement` are set in the two input action properties.
+For the main movement and camera controls, GMCv2 can handle the basics internally. If you look at the `BP_ExampleMovement` blueprint component, you'll see that `IA_Look` and `IA_Movement` are set in the two input action properties.
 
-The actual mapping that defines what those inputs are bound to is in the `IMC_Default` file in the Input folder; if you look at `BP_DefaultPawn` you'll see that this project's pawn will automatically use an input mapping context if one is set in its properties, and the default pawn is set to use `IMC_Default`.
+The actual mapping that defines what those inputs are bound to is in the `IMC_Default` file in the Input folder; if you look at `BP_ExamplePawn` you'll see that this project's pawn will automatically use an input mapping context if one is set in its properties, and the default pawn is set to use `IMC_Default`.
 
 You will also see a number of `IA_<whatever>` events in the default pawn; these events are called when a given input action is triggered. This is how the Jump, Sprint, and Roll abilities get called.
+
+### How do I change the player pawn's movement behavior?
+
+In addition to GMC's normal "Orient to Input Direction" or "Orient to Control Direction", GMCEx adds a few other features, notably "Orient to Velocity Direction" (where the way the character is facing is determined by your velocity). This is on by default in the template.
+
+GMCEx also has a turn-in-place assist logic, which is "Require Facing Before Move" (with a "Facing Angle Offset Threshold"); if this is true, then the character will turn until they are within the offset threshold of the direction they're trying to move, and *then* they will start moving. This is coupled with a `GetAimYawRemaining` function which will tell you how much is still left in the turn. (Which is already cached and made available in the animation blueprint.)
+
+## Potential TODO List
+
+### Basic Functionality
+
+Most of the rest of the GMAS demo functionality needs to still be ported in -- roll, crouch, and the more advanced abilities like teleport and whatnot. This is relatively straightforward.
+
+### Animation
+
+Internally right now, GMCEx has a bunch of additional animation functionality being added on -- precalculating orientation warping, things like that. Once I've finished those and pushed them live, I intend to convert the project to using those. I also intend to add some examples of how to use the motion warping functionality in GMCExtended. Which brings us to...
+
+### Solvers
+
+Yeah, *everyone* asks me about this. For those who aren't aware, I created a movement system for my game based around little blocks of movement logic -- things which could solve "can I climb this" and handle how you would climb, for instance -- which could be added and removed on-the-fly. It's worked very well for me, but many people asked about the Solvers on the GMC Discord. As a result, I've ported the base solver functionality into GMCEx... but there are currently no examples of how to *use* solvers, because all of my solvers are too heavily tied to my game code.
+
+Adding a climbing/mantling or wall-running solver is definitely on the list to do eventually, especially as it'll serve as a useful example of how to use the motion warping functionality.
