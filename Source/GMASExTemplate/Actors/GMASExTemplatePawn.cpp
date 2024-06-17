@@ -7,14 +7,15 @@
 AGMASExTemplatePawn::AGMASExTemplatePawn(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	MotionWarpingComponent = CreateDefaultSubobject<UGMCE_MotionWarpingComponent>(TEXT("Motion Warping Component"));
-	MovementComponent = CreateDefaultSubobject<UGMASExTemplateMovementComponent>(TEXT("Movement Component"));
+	MotionWarpingComponent = ObjectInitializer.CreateDefaultSubobject<UGMCE_MotionWarpingComponent>(this, TEXT("MotionWarpingComponent"));
+	MovementComponent = ObjectInitializer.CreateDefaultSubobject<UGMASExTemplateMovementComponent>(this, ("MovementComponent"));
 	OverrideInputComponentClass = UEnhancedInputComponent::StaticClass();
 	
 #if WITH_EDITOR
 	UGMASUtilities::SetPropertyFlagsSafe(StaticClass(), TEXT("MotionWarpingComponent"), CPF_DisableEditOnInstance);
 	UGMASUtilities::SetPropertyFlagsSafe(StaticClass(), TEXT("MovementComponent"), CPF_DisableEditOnInstance);
-#endif 	
+#endif
+	
 }
 
 USkeletalMeshComponent* AGMASExTemplatePawn::MotionWarping_GetMeshComponent() const
