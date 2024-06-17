@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "GMASExTemplateMovementComponent.h"
 #include "GMCE_MotionWarpingComponent.h"
 #include "GMCE_MotionWarpSubject.h"
 #include "Actors/GMAS_Pawn.h"
