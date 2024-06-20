@@ -21,6 +21,8 @@ class GMASEXTEMPLATE_API AGMASExTemplatePawn : public AGMAS_Pawn, public IGMCE_M
 public:
 	explicit AGMASExTemplatePawn(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	virtual void BeginPlay() override;
+	
 	// GMCExtendedAnimation motion warping interface
 	virtual USkeletalMeshComponent* MotionWarping_GetMeshComponent() const override;
 	virtual float MotionWarping_GetCollisionHalfHeight() const override;
@@ -31,9 +33,11 @@ public:
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Components")
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category="Components")
 	UGMASExTemplateMovementComponent* MovementComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Components")
 	UGMCE_MotionWarpingComponent* MotionWarpingComponent;
+
+
 };
