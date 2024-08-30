@@ -28,14 +28,14 @@ You will also need the most recent version of the General Movement Component ins
 
 ### Installation Process
 
-Find where your copy of Unreal 5.4 is installed -- on Windows, by default this is `C:\Program Files\Epic Games\UE_5.3` though obviously your copy may be installed somewhere else.
+Find where your copy of Unreal 5.4 is installed -- on Windows, by default this is `C:\Program Files\Epic Games\UE_5.4` though obviously your copy may be installed somewhere else.
 
 Once you've located your Unreal 5.4 install directory:
 
 1. Make sure that you've installed GMCv2 into 5.4 from the Epic launcher.
   * **NOTE:** You _can_ install the plugin directly into the final project, just be aware that if you don't have GMCv2 in your 5.4 engine install, the project _will_ fail to open the first time.
 2. Open a command prompt, such as the Windows `cmd.exe`.
-3. Go to the Unreal Engine 5.4 installation directory you've located; if using `cmd.exe` you would do `cd <directory>`, for instance `cd "C:\Program Files\Epic Games\UE_5.4"` -- notice that if there are spaces in the path anywhere, you will want to put the path in quotes.
+3. Go to the `Templates` directory under Unreal Engine 5.4 installation directory you've located; if using `cmd.exe` you would do `cd <directory>`, for instance `cd "C:\Program Files\Epic Games\UE_5.4\Templates"` -- notice that if there are spaces in the path anywhere, you will want to put the path in quotes.
 4. Type `git clone --recursive https://github.com/Rooibot/GMASExTemplate.git` and wait for the command to finish. This will pull not only the GMASEx template but also appropriate versions of GMAS and GMCEx.
 
 This will pull the base template _and_ the appropriate copies of GMAS and GMCEx all in one go.
