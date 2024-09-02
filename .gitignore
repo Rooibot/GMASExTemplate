@@ -4,6 +4,9 @@ DerivedDataCache/
 Intermediate/
 Saved/
 
+# Ensure GMC itself is never checked in, even if we're testing a non-marketplace build
+Plugins/GMC
+
 # IDE artifacts
 .idea/
 .vs/
