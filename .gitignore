@@ -7,6 +7,9 @@ Saved/
 # Ensure GMC itself is never checked in, even if we're testing a non-marketplace build
 Plugins/GMC
 
+# Don't check in the experimental motion matching samples until we're ready.
+Plugins/GMCE_Motion
+
 # IDE artifacts
 .idea/
 .vs/
