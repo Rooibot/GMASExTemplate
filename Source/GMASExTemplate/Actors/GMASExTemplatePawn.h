@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GMASExTemplateMovementComponent.h"
+#include "GMASExTemplatePawn_Base.h"
 #include "GMCE_MotionWarpingComponent.h"
 #include "GMCE_MotionWarpSubject.h"
 #include "Actors/GMAS_Pawn.h"
@@ -11,33 +12,29 @@
 class UGMASExTemplateMovementComponent;
 
 /**
- * 
+ * @class AGMASExTemplatePawn
+ * @brief A pawn class that extends the base template pawn.
+ *
+ * This class serves as a third-person convenience pawn with additional components such as a skeletal mesh,
+ * a spring arm, and a follow camera.
  */
 UCLASS()
-class GMASEXTEMPLATE_API AGMASExTemplatePawn : public AGMAS_Pawn, public IGMCE_MotionWarpSubject
+class GMASEXTEMPLATE_API AGMASExTemplatePawn : public AGMASExTemplatePawn_Base
 {
 	GENERATED_BODY()
 
 public:
 	explicit AGMASExTemplatePawn(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	virtual void BeginPlay() override;
-	
-	// GMCExtendedAnimation motion warping interface
-	virtual USkeletalMeshComponent* MotionWarping_GetMeshComponent() const override;
-	virtual float MotionWarping_GetCollisionHalfHeight() const override;
-	virtual FQuat MotionWarping_GetRotationOffset() const override;
-	virtual FVector MotionWarping_GetTranslationOffset() const override;
-	virtual FAnimMontageInstance* GetRootMotionAnimMontageInstance(USkeletalMeshComponent* MeshComponent) const override;
-	virtual UGMCE_OrganicMovementCmp* GetGMCExMovementComponent() const override;
-
 protected:
 
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category="Components")
-	UGMASExTemplateMovementComponent* MovementComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Components", DisplayName="Skeletal Mesh", meta=(AllowPrivateAccess=true))
+	TObjectPtr<USkeletalMeshComponent> MeshComponent;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Components", DisplayName="Spring Arm", meta=(AllowPrivateAccess=true))
+	TObjectPtr<USpringArmComponent> SpringArmComponent;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Components")
-	UGMCE_MotionWarpingComponent* MotionWarpingComponent;
-
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Components", DisplayName="Follow Camera", meta=(AllowPrivateAccess=true))
+	TObjectPtr<UCameraComponent> CameraComponent;
 
 };

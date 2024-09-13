@@ -1,59 +1,39 @@
 ﻿#include "GMASExTemplatePawn.h"
 
 #include "EnhancedInputComponent.h"
+#include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "GMASExTemplate/Components/GMASExTemplateMovementComponent.h"
 #include "Utility/GMASUtilities.h"
 
 AGMASExTemplatePawn::AGMASExTemplatePawn(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	MotionWarpingComponent = ObjectInitializer.CreateDefaultSubobject<UGMCE_MotionWarpingComponent>(this, TEXT("MotionWarpingComponent"));
-	OverrideInputComponentClass = UEnhancedInputComponent::StaticClass();
-}
+	USceneComponent *TemporaryCapsule = GetComponentByClass<UCapsuleComponent>();
 
-void AGMASExTemplatePawn::BeginPlay()
-{
-	Super::BeginPlay();
-	MovementComponent = GetComponentByClass<UGMASExTemplateMovementComponent>();
-
-	if (!IsValid(MovementComponent))
-	{
-		UE_LOG(LogActor, Error, TEXT("%s has no valid movement component!"), *GetName());
-	}
-}
-
-USkeletalMeshComponent* AGMASExTemplatePawn::MotionWarping_GetMeshComponent() const
-{
-	return MeshComponent;
-}
-
-float AGMASExTemplatePawn::MotionWarping_GetCollisionHalfHeight() const
-{
-	if (!MovementComponent) return 0.f;
+	MeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Skeletal Mesh"));
+	MeshComponent->bEditableWhenInherited = true;
+	MeshComponent->SetupAttachment(TemporaryCapsule);
+	MeshComponent->SetRelativeLocation(FVector(0.f, 0.f, -90.f));
+	MeshComponent->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+	MeshComponent->SetCollisionProfileName(TEXT("NoCollision"));
 	
-	return MovementComponent->GetRootCollisionHalfHeight(true);
-}
+	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
+	SpringArmComponent->bEditableWhenInherited = true;
+	SpringArmComponent->SetupAttachment(TemporaryCapsule);
+	SpringArmComponent->TargetArmLength = 400.f;
+	SpringArmComponent->bUsePawnControlRotation = true;
 
-FQuat AGMASExTemplatePawn::MotionWarping_GetRotationOffset() const
-{
-	if (!MeshComponent) return FQuat::Identity;
+	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Follow Camera"));
+	CameraComponent->bEditableWhenInherited = true;
+	CameraComponent->SetupAttachment(SpringArmComponent);
+	CameraComponent->bUsePawnControlRotation = false;
 	
-	return MeshComponent->GetRelativeRotation().Quaternion();
+#if WITH_EDITOR
+	UGMASUtilities::SetPropertyFlagsSafe(StaticClass(), TEXT("MeshComponent"), CPF_DisableEditOnInstance);
+	UGMASUtilities::SetPropertyFlagsSafe(StaticClass(), TEXT("SpringArmComponent"), CPF_DisableEditOnInstance);
+	UGMASUtilities::SetPropertyFlagsSafe(StaticClass(), TEXT("CameraComponent"), CPF_DisableEditOnInstance);
+#endif	
 }
 
-FVector AGMASExTemplatePawn::MotionWarping_GetTranslationOffset() const
-{
-	if (!MeshComponent) return FVector::ZeroVector;
-	
-	return MeshComponent->GetRelativeLocation();
-}
-
-FAnimMontageInstance* AGMASExTemplatePawn::GetRootMotionAnimMontageInstance(USkeletalMeshComponent* InMeshComponent) const
-{
-	return IGMCE_MotionWarpSubject::GetRootMotionAnimMontageInstance(InMeshComponent);
-}
-
-UGMCE_OrganicMovementCmp* AGMASExTemplatePawn::GetGMCExMovementComponent() const
-{
-	return MovementComponent;
-}
