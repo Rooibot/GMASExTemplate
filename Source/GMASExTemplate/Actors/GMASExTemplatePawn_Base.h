@@ -27,6 +27,15 @@ public:
 	virtual void BeginPlay() override;
 
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION(BlueprintCallable, Category = "GMCExTemplatePawn")
+	virtual void Respawn();
+
+	UFUNCTION()
+	void OnRespawnCallback();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Respawn")
+	void OnRespawn();
 	
 	// GMCExtendedAnimation motion warping interface
 	virtual USkeletalMeshComponent* MotionWarping_GetMeshComponent() const override;
@@ -57,4 +66,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Components")
 	TObjectPtr<USkeletalMeshComponent> MotionWarpingMeshComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Respawn")
+	FGameplayTagContainer RespawnRemovesEffects;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Respawn")
+	FGameplayTagContainer RespawnRemovesActiveTags;
 };

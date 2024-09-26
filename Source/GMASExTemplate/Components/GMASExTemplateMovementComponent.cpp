@@ -1,5 +1,7 @@
 ﻿#include "GMASExTemplateMovementComponent.h"
 
+#include "Kismet/GameplayStatics.h"
+
 void UGMASExTemplateMovementComponent::BindReplicationData_Implementation()
 {
 	Super::BindReplicationData_Implementation();
@@ -12,6 +14,35 @@ void UGMASExTemplateMovementComponent::BindReplicationData_Implementation()
 		AbilitySystemComponent->GMCMovementComponent = this;
 		AbilitySystemComponent->BindReplicationData();
 	}
+
+	BindBool(
+		bWantsRespawn,
+		EGMC_PredictionMode::ClientAuth_Input,
+		EGMC_CombineMode::CombineIfUnchanged,
+		EGMC_SimulationMode::None,
+		EGMC_InterpolationFunction::NearestNeighbour);
+
+	BindBool(
+		bShouldRespawn,
+		EGMC_PredictionMode::ServerAuth_Output_ClientValidated,
+		EGMC_CombineMode::CombineIfUnchanged,
+		EGMC_SimulationMode::None,
+		EGMC_InterpolationFunction::NearestNeighbour
+		);
+	
+	BindCompressedVector(
+		RespawnTargetLocation,
+		EGMC_PredictionMode::ServerAuth_Output_ClientValidated,
+		EGMC_CombineMode::CombineIfUnchanged,
+		EGMC_SimulationMode::None,
+		EGMC_InterpolationFunction::NearestNeighbour);
+
+	BindCompressedRotator(
+		RespawnTargetRotation,
+		EGMC_PredictionMode::ServerAuth_Output_ClientValidated,
+		EGMC_CombineMode::CombineIfUnchanged,
+		EGMC_SimulationMode::None,
+		EGMC_InterpolationFunction::NearestNeighbour);
 }
 
 void UGMASExTemplateMovementComponent::GenAncillaryTick_Implementation(float DeltaTime, bool bLocalMove,
@@ -43,6 +74,33 @@ void UGMASExTemplateMovementComponent::PreLocalMoveExecution_Implementation(cons
 	if (AbilitySystemComponent) AbilitySystemComponent->PreLocalMoveExecution();
 }
 
+void UGMASExTemplateMovementComponent::MovementUpdate_Implementation(float DeltaSeconds)
+{
+	Super::MovementUpdate_Implementation(DeltaSeconds);
+
+	if (bShouldRespawn)
+	{
+		bWantsRespawn = false;
+		bShouldRespawn = false;
+		if (GetMovementMode() == GetRagdollMode())
+		{
+			DisableRagdoll();
+		}
+		SetActorLocationAndRotation_GMC(RespawnTargetLocation, RespawnTargetRotation, false);
+		OnRespawnDelegate.Execute();
+	}
+	
+	if (bWantsRespawn)
+	{
+		FTransform RespawnTransform;
+		GetRespawnLocation(RespawnTransform);
+		RespawnTargetLocation = RespawnTransform.GetLocation();
+		RespawnTargetRotation = RespawnTransform.Rotator();
+		bShouldRespawn = true;
+	}
+}
+
+
 void UGMASExTemplateMovementComponent::OnSolverChangedMode(FGameplayTag NewMode, FGameplayTag OldMode)
 {
 	Super::OnSolverChangedMode(NewMode, OldMode);
@@ -61,4 +119,26 @@ void UGMASExTemplateMovementComponent::OnSolverChangedMode(FGameplayTag NewMode,
 		}
 	}
 
+}
+
+void UGMASExTemplateMovementComponent::Respawn()
+{
+	bWantsRespawn = true;
+}
+
+void UGMASExTemplateMovementComponent::GetRespawnLocation_Implementation(FTransform& OutTransform)
+{
+	TArray<AActor*> Actors;
+	
+	// Basic default; grab a random APlayerStart.
+	UGameplayStatics::GetAllActorsOfClass(this, APlayerStart::StaticClass(), Actors);
+	if (Actors.Num() == 0)
+	{
+		OutTransform = GetActorTransform_GMC();
+		return;
+	}
+
+	int RandomIndex = FMath::RandRange(0, Actors.Num() - 1);
+	const AActor *Actor = Actors[RandomIndex];
+	OutTransform = Actor->GetActorTransform();
 }

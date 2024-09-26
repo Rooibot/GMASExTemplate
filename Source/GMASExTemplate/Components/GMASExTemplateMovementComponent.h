@@ -4,9 +4,12 @@
 #include "GMCAbilityComponent.h"
 #include "GMCE_MotionWarpingComponent.h"
 #include "GMCE_OrganicMovementCmp.h"
+#include "GameFramework/PlayerStart.h"
 #include "UObject/Object.h"
 #include "GMASExTemplateMovementComponent.generated.h"
 
+DECLARE_DYNAMIC_DELEGATE(FOnRespawn);
+ 
 /**
  * 
  */
@@ -24,9 +27,19 @@ public:
 	virtual void GenSimulationTick_Implementation(float DeltaTime) override;
 	virtual void PreLocalMoveExecution_Implementation(const FGMC_Move& LocalMove) override;
 
+	virtual void MovementUpdate_Implementation(float DeltaSeconds) override;
+	
 	// GMCEx overrides
 	virtual void OnSolverChangedMode(FGameplayTag NewMode, FGameplayTag OldMode) override;
 
+	UFUNCTION(BlueprintCallable, Category = "Respawn")
+	virtual void Respawn();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Respawn")
+	void GetRespawnLocation(FTransform& OutTransform);
+
+	FOnRespawn OnRespawnDelegate;
+	
 protected:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category="Components")
@@ -36,5 +49,9 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category="Components")
 	/// Convenience reference to the GMCEx motion warping component.
 	UGMCE_MotionWarpingComponent* MotionWarpingComponent;
-	
+
+	bool bWantsRespawn;
+	bool bShouldRespawn;
+	FVector RespawnTargetLocation;
+	FRotator RespawnTargetRotation;
 };

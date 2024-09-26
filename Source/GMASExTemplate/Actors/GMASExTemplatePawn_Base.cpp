@@ -71,6 +71,35 @@ void AGMASExTemplatePawn_Base::SetupPlayerInputComponent(UInputComponent* Player
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
+void AGMASExTemplatePawn_Base::Respawn()
+{
+	if (!MovementComponent) return;
+
+	MovementComponent->OnRespawnDelegate.BindUFunction(this, "OnRespawnCallback");
+	MovementComponent->Respawn();
+}
+
+void AGMASExTemplatePawn_Base::OnRespawnCallback()
+{
+	if (!AbilitySystemComponent) return;
+
+	for (const FGameplayTag& ActiveTag : RespawnRemovesActiveTags)
+	{
+		AbilitySystemComponent->RemoveActiveTag(ActiveTag);
+	}
+
+	for (const FGameplayTag& EffectTag : RespawnRemovesEffects)
+	{
+		AbilitySystemComponent->RemoveEffectByTag(EffectTag, -1, false);
+	}
+
+	OnRespawn();
+}
+
+void AGMASExTemplatePawn_Base::OnRespawn_Implementation()
+{
+}
+
 USkeletalMeshComponent* AGMASExTemplatePawn_Base::MotionWarping_GetMeshComponent() const
 {
 	return MotionWarpingMeshComponent;
