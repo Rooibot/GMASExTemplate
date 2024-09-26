@@ -26,6 +26,10 @@
 		{
 			"Name": "AnimationWarping",
 			"Enabled": true
+		},
+		{
+			"Name": "Cargo",
+			"Enabled": true
 		}
 	]
 }
