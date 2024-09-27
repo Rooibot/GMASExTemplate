@@ -39,10 +39,15 @@ void AGMASExTemplatePawn_Base::BeginPlay()
 	
 	MovementComponent = GetComponentByClass<UGMASExTemplateMovementComponent>();
 
-	if (!IsValid(MovementComponent))
+	if (IsValid(MovementComponent))
+	{
+		MovementComponent->OnRespawnDelegate.BindUFunction(this, "OnRespawnCallback");
+	}
+	else
 	{
 		UE_LOG(LogActor, Error, TEXT("%s has no valid movement component!"), *GetName());
 	}
+	
 
 	if (MotionWarpingMeshComponent == nullptr)
 	{
@@ -73,10 +78,43 @@ void AGMASExTemplatePawn_Base::SetupPlayerInputComponent(UInputComponent* Player
 
 void AGMASExTemplatePawn_Base::Respawn()
 {
+	// Respawn is not relevant for simulated proxies.
+	if (GetLocalRole() == ROLE_SimulatedProxy) return;
+
+	Respawn_Internal();
+
+	// If we're standalone, this is enough.
+	if (GetNetMode() == NM_Standalone) return;
+
+	// If we're a client, call the server version of respawn.
+	if (GetNetMode() == NM_Client)
+	{
+		SV_Respawn();
+		return;
+	}
+
+	// If we're here, we're a server; call the client version.
+	CL_Respawn();
+}
+
+void AGMASExTemplatePawn_Base::Respawn_Internal()
+{
 	if (!MovementComponent) return;
 
-	MovementComponent->OnRespawnDelegate.BindUFunction(this, "OnRespawnCallback");
-	MovementComponent->Respawn();
+	MovementComponent->Respawn();	
+}
+
+void AGMASExTemplatePawn_Base::CL_Respawn_Implementation()
+{
+	// Any other respawn logic is not relevant for simulated proxies.
+	if (GetLocalRole() == ROLE_SimulatedProxy) return;
+	
+	Respawn_Internal();
+}
+
+void AGMASExTemplatePawn_Base::SV_Respawn_Implementation()
+{
+	Respawn_Internal();
 }
 
 void AGMASExTemplatePawn_Base::OnRespawnCallback()

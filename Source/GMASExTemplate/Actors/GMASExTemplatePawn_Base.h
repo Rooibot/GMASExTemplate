@@ -31,6 +31,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GMCExTemplatePawn")
 	virtual void Respawn();
 
+	void Respawn_Internal();
+	
+	UFUNCTION(Client, Reliable)
+	void CL_Respawn();
+
+	UFUNCTION(Server, Reliable)
+	void SV_Respawn();
+	
 	UFUNCTION()
 	void OnRespawnCallback();
 

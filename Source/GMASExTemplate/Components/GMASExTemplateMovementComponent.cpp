@@ -1,5 +1,7 @@
 ﻿#include "GMASExTemplateMovementComponent.h"
 
+#include "GMCExtendedLog.h"
+#include "Engine/PackageMapClient.h"
 #include "Kismet/GameplayStatics.h"
 
 void UGMASExTemplateMovementComponent::BindReplicationData_Implementation()
@@ -19,16 +21,23 @@ void UGMASExTemplateMovementComponent::BindReplicationData_Implementation()
 		bWantsRespawn,
 		EGMC_PredictionMode::ClientAuth_Input,
 		EGMC_CombineMode::CombineIfUnchanged,
-		EGMC_SimulationMode::None,
+		EGMC_SimulationMode::PeriodicAndOnChange_Output,
 		EGMC_InterpolationFunction::NearestNeighbour);
 
-	BindBool(
+	BI_ShouldRespawn = BindBool(
 		bShouldRespawn,
 		EGMC_PredictionMode::ServerAuth_Output_ClientValidated,
 		EGMC_CombineMode::CombineIfUnchanged,
-		EGMC_SimulationMode::None,
+		EGMC_SimulationMode::PeriodicAndOnChange_Output,
 		EGMC_InterpolationFunction::NearestNeighbour
 		);
+
+	BindBool(
+		bRespawnReady,
+		EGMC_PredictionMode::ClientAuth_Input,
+		EGMC_CombineMode::CombineIfUnchanged,
+		EGMC_SimulationMode::None,
+		EGMC_InterpolationFunction::NearestNeighbour);
 	
 	BindCompressedVector(
 		RespawnTargetLocation,
@@ -78,28 +87,25 @@ void UGMASExTemplateMovementComponent::MovementUpdate_Implementation(float Delta
 {
 	Super::MovementUpdate_Implementation(DeltaSeconds);
 
-	if (bShouldRespawn)
+	if (bShouldRespawn && bRespawnReady)
 	{
 		bWantsRespawn = false;
 		bShouldRespawn = false;
+		bRespawnReady = false;
 		if (GetMovementMode() == GetRagdollMode())
 		{
 			DisableRagdoll();
 		}
-		SetActorLocationAndRotation_GMC(RespawnTargetLocation, RespawnTargetRotation, false);
+		
+		UpdatedComponent->SetWorldLocationAndRotation(RespawnTargetLocation, RespawnTargetRotation, false, nullptr, ETeleportType::ResetPhysics);
 		OnRespawnDelegate.Execute();
 	}
-	
-	if (bWantsRespawn)
+	else if (bWantsRespawn && !bShouldRespawn && GetOwnerRole() == ROLE_Authority)
 	{
-		FTransform RespawnTransform;
-		GetRespawnLocation(RespawnTransform);
-		RespawnTargetLocation = RespawnTransform.GetLocation();
-		RespawnTargetRotation = RespawnTransform.Rotator();
-		bShouldRespawn = true;
+		// A respawn has been requested by the client; we should handle it.
+		Respawn_Internal();
 	}
 }
-
 
 void UGMASExTemplateMovementComponent::OnSolverChangedMode(FGameplayTag NewMode, FGameplayTag OldMode)
 {
@@ -123,7 +129,48 @@ void UGMASExTemplateMovementComponent::OnSolverChangedMode(FGameplayTag NewMode,
 
 void UGMASExTemplateMovementComponent::Respawn()
 {
-	bWantsRespawn = true;
+	if (GetOwnerRole() == ROLE_SimulatedProxy) return;
+
+	if (GetOwnerRole() == ROLE_Authority)
+	{
+		// Kick off the respawn logic.
+		Respawn_Internal();
+	}
+	else
+	{
+		// We're an autonomous proxy, so flag the server that we'd like to respawn.
+		bWantsRespawn = true;
+	}
+}
+
+void UGMASExTemplateMovementComponent::Respawn_Internal()
+{
+	FTransform RespawnTransform;
+	GetRespawnLocation(RespawnTransform);
+
+	if (GetNetMode() == NM_Standalone)
+	{
+		// We're standalone, so we're good to go.
+		bRespawnReady = true;	
+	}
+	else 
+	{
+		// We're in multiplayer. To make sure we respawn in the same location, send our selected
+		// respawn point to the client.
+		CL_SetRespawnLocation(RespawnTransform);
+	}
+	RespawnTargetLocation = RespawnTransform.GetLocation();
+	RespawnTargetRotation = RespawnTransform.Rotator();
+	bShouldRespawn = true;
+}
+
+void UGMASExTemplateMovementComponent::CL_SetRespawnLocation_Implementation(const FTransform& TargetTransform)
+{
+	// Receive a selected respawn point from the authority, and mark us ready to go.
+	RespawnTargetLocation = TargetTransform.GetLocation();
+	RespawnTargetRotation = TargetTransform.Rotator();
+	bShouldRespawn = true;
+	bRespawnReady = true;
 }
 
 void UGMASExTemplateMovementComponent::GetRespawnLocation_Implementation(FTransform& OutTransform)
@@ -138,7 +185,7 @@ void UGMASExTemplateMovementComponent::GetRespawnLocation_Implementation(FTransf
 		return;
 	}
 
-	int RandomIndex = FMath::RandRange(0, Actors.Num() - 1);
-	const AActor *Actor = Actors[RandomIndex];
+	int ActorToUse = FMath::RandRange(0, Actors.Num() - 1);
+	const AActor *Actor = Actors[ActorToUse];
 	OutTransform = Actor->GetActorTransform();
 }

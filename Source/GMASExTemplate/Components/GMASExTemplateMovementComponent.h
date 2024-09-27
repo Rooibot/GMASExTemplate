@@ -35,8 +35,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Respawn")
 	virtual void Respawn();
 
+	void Respawn_Internal();
+	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Respawn")
 	void GetRespawnLocation(FTransform& OutTransform);
+
+	UFUNCTION(Client, Reliable)
+	void CL_SetRespawnLocation(const FTransform& TargetTransform);
 
 	FOnRespawn OnRespawnDelegate;
 	
@@ -50,8 +55,14 @@ protected:
 	/// Convenience reference to the GMCEx motion warping component.
 	UGMCE_MotionWarpingComponent* MotionWarpingComponent;
 
-	bool bWantsRespawn;
-	bool bShouldRespawn;
+	bool bWantsRespawn { false };
+	bool bShouldRespawn { false };
+
+	bool bRespawnReady { false };
+
+	int32 BI_ShouldRespawn { -1 };
+	
 	FVector RespawnTargetLocation;
 	FRotator RespawnTargetRotation;
+
 };
