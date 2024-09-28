@@ -83,6 +83,13 @@ void UGMASExTemplateMovementComponent::PreLocalMoveExecution_Implementation(cons
 	if (AbilitySystemComponent) AbilitySystemComponent->PreLocalMoveExecution();
 }
 
+void UGMASExTemplateMovementComponent::SV_PreRemoteMoveExecution_Implementation(const FGMC_Move& RemoteMove)
+{
+	Super::SV_PreRemoteMoveExecution_Implementation(RemoteMove);
+
+	if (AbilitySystemComponent) AbilitySystemComponent->PreRemoteMoveExecution();
+}
+
 void UGMASExTemplateMovementComponent::MovementUpdate_Implementation(float DeltaSeconds)
 {
 	Super::MovementUpdate_Implementation(DeltaSeconds);

@@ -26,6 +26,7 @@ public:
 	virtual void GenPredictionTick_Implementation(float DeltaTime) override;
 	virtual void GenSimulationTick_Implementation(float DeltaTime) override;
 	virtual void PreLocalMoveExecution_Implementation(const FGMC_Move& LocalMove) override;
+	virtual void SV_PreRemoteMoveExecution_Implementation(const FGMC_Move& RemoteMove) override;
 
 	virtual void MovementUpdate_Implementation(float DeltaSeconds) override;
 	
