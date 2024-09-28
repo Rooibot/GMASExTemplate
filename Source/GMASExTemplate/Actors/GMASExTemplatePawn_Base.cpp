@@ -53,6 +53,11 @@ void AGMASExTemplatePawn_Base::BeginPlay()
 	{
 		MotionWarpingMeshComponent = GetComponentByClass<USkeletalMeshComponent>();
 	}
+
+	if (IsValid(MovementComponent) && IsValid(MotionWarpingComponent))
+	{
+		MotionWarpingComponent->BindToMovementComponent();
+	}
 }
 
 // Called to bind functionality to input
